@@ -1,3 +1,10 @@
+/app/Config/database.php
+/app/Config/core.php
+/app/Config/email.php
+/app/tmp
+*.mo
+
+
 /bin
 
 # IDE and editor specific files #
