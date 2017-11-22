@@ -2,71 +2,60 @@
 #include<stdlib.h>
 #include<stdio.h>
 
+#ifndef WIDTHBYTES
+#define WIDTHBYTES(bits)    (((bits)+31)/32*4)
+#endif//WIDTHBYTES
 
-void init_mono_bmp(MonoBmp *bmp){
+void init_mono_bmp(Bmp *bmp){
   bmp->width = 0;
   bmp->height = 0;
   bmp->map = NULL;
 }
 
-void free_for_bmp(unsigned char ** map){
-  if(map != NULL){
-    if(map[0] != NULL){
-      free(map[0]);
+
+void delete_mono_bmp(Bmp *bmp){
+  bmp->height = 0;
+  bmp->width = 0;
+  free(bmp->map);
+  bmp->map = NULL;
+}
+
+
+
+int alloc_bmp(int width,int height,Bmp *bmp){
+    int i;
+    unsigned int dwWidthBytes, cbBits;
+    int nDepth;
+    
+    bmp->width = width;
+    bmp->height = height;
+    
+    nDepth = 24; //24bit BGR
+    dwWidthBytes = WIDTHBYTES(bmp->width * nDepth);
+    cbBits = dwWidthBytes * bmp->height;
+    
+    bmp->map = malloc(cbBits);
+    if(bmp->map == NULL){
+      return 0;
     }
-    free(map);
-  }
-}
-
-
-void delete_mono_bmp(MonoBmp *bmp){
-  bmp->height = 0;
-  bmp->width = 0;
-  free_for_bmp(bmp->map);
-  bmp->map = NULL;
-}
-
-unsigned char **mem_alloc_for_bmp(int width,int height){
-  unsigned char ** ret;
-  int i;
-  ret=(unsigned char**)malloc(sizeof(char*)*(height));
-  if(ret == NULL){
-    return NULL;
-  }
-  ret[0]=(unsigned char*)malloc(sizeof(char)*(height)*((width+31)&0xFFFFFFE0));
-  if(ret[0] == NULL){
-    free(ret);
-    return NULL;
-  }
-  for(i=1;i<height;i++) ret[i]=ret[i-1]+((width+31)&0xFFFFFFE0);
-  return ret;
-}
-
-
-int alloc_bmp(int width,int height,MonoBmp *bmp){
-  int i;
-  bmp->width = width;
-  bmp->height = height;
-  bmp->map=mem_alloc_for_bmp(width,height);
-  if(bmp->map == NULL){
-    return 0;
-  }
     return 1;
 }
 
 
 
 //TODO: ヘッダ管理関係書き直し（オフセット値とか使うように変更しないと一部ファイルでやばい）
-BMP_IO_ERR_CODE load_mono_bmp_file(char* filename, MonoBmp *bmp){
+BMP_IO_ERR_CODE load_mono_bmp_file(char* filename, Bmp *bmp){
   int i,j,k;
   int bk=-1,wh=-1;//色アクセス用変数
   unsigned int temp;
   unsigned int mask;
+  unsigned int dwWidthBytes, cbBits;
+  int nDepth;
 
   BmpHeader bf;
   BmpInfo bi;
 
-    ColorPalette bc;
+  ColorPalette bc;
 
   FILE *fp;
   fp = fopen(filename,"rb");
@@ -146,12 +135,15 @@ BMP_IO_ERR_CODE load_mono_bmp_file(char* filename, MonoBmp *bmp){
   }
   //イメージ本体読み込み
 
-  free_for_bmp(bmp->map);//どっかに移動したい,もしここでセグメントエラーが起きたら初期化忘れ
+  free(bmp->map);//どっかに移動したい,もしここでセグメントエラーが起きたら初期化忘れ
   //メモリー領域確保
   if(alloc_bmp(bmp->width,bmp->height,bmp)==0){
     fclose(fp);
     return BMP_IO_ERROR_FAILD_TO_ALLOCATE_MEMORY;
   }
+
+  nDepth = 24; //24bit BGR
+  dwWidthBytes = WIDTHBYTES(bmp->width * nDepth);
 
   temp=0;
   mask = ~(unsigned int)((int)0-bk);
@@ -165,7 +157,11 @@ BMP_IO_ERR_CODE load_mono_bmp_file(char* filename, MonoBmp *bmp){
         temp = __builtin_bswap32(temp);
         temp ^= mask;
         for(k = 0;k<32;k++){
-          bmp->map[i][j+k]=(temp>>(31-k))&1;
+          //bmp->map[i][j+k]=(temp>>(31-k))&1;
+          int tmp = (temp>>(31-k))&1;
+          bmp->map[dwWidthBytes * i + (j+k)*3 + 0] = 255 - tmp * 255;
+          bmp->map[dwWidthBytes * i + (j+k)*3 + 1] = 255 - tmp * 255;
+          bmp->map[dwWidthBytes * i + (j+k)*3 + 2] = 255 - tmp * 255;
         }
       }
       if(j<bmp->width){
@@ -173,7 +169,11 @@ BMP_IO_ERR_CODE load_mono_bmp_file(char* filename, MonoBmp *bmp){
         temp = __builtin_bswap32(temp);
         temp ^= mask;
         for(k = 0;j + k< bmp->width;k++){
-          bmp->map[i][j+k]=(temp>>(31-k))&1;
+          //bmp->map[i][j+k]=(temp>>(31-k))&1;
+          int tmp = (temp>>(31-k))&1;
+          bmp->map[dwWidthBytes * i + (j+k)*3 + 0] = 255 - tmp * 255;
+          bmp->map[dwWidthBytes * i + (j+k)*3 + 1] = 255 - tmp * 255;
+          bmp->map[dwWidthBytes * i + (j+k)*3 + 2] = 255 - tmp * 255;
         }
       }
     }
@@ -188,7 +188,11 @@ BMP_IO_ERR_CODE load_mono_bmp_file(char* filename, MonoBmp *bmp){
         temp = __builtin_bswap32(temp);
         temp ^= mask;
         for(k = 0;k<32;k++){
-          bmp->map[i][j+k]=(temp>>(31-k))&1;
+          //bmp->map[i][j+k]=(temp>>(31-k))&1;
+          int tmp = (temp>>(31-k))&1;
+          bmp->map[dwWidthBytes * i + (j+k)*3 + 0] = 255 - tmp * 255;
+          bmp->map[dwWidthBytes * i + (j+k)*3 + 1] = 255 - tmp * 255;
+          bmp->map[dwWidthBytes * i + (j+k)*3 + 2] = 255 - tmp * 255;
         }
       }
       if(j<bmp->width){
@@ -196,14 +200,17 @@ BMP_IO_ERR_CODE load_mono_bmp_file(char* filename, MonoBmp *bmp){
         temp = __builtin_bswap32(temp);
         temp ^= mask;
         for(k = 0;j + k< bmp->width;k++){
-          bmp->map[i][j+k]=(temp>>(31-k))&1;
+          //bmp->map[i][j+k]=(temp>>(31-k))&1;
+          int tmp = (temp>>(31-k))&1;
+          bmp->map[dwWidthBytes * i + (j+k)*3 + 0] = 255 - tmp * 255;
+          bmp->map[dwWidthBytes * i + (j+k)*3 + 1] = 255 - tmp * 255;
+          bmp->map[dwWidthBytes * i + (j+k)*3 + 2] = 255 - tmp * 255;
         }
       }
     }
   }
-  bmp->init_height = bmp->height;
-  bmp->init_width  = bmp->width;
-  bmp->angle = 0.0;
+  bmp->height;
+  bmp->width;
   
   READ_END:;
   fclose(fp);
@@ -214,7 +221,7 @@ BMP_IO_ERR_CODE load_mono_bmp_file(char* filename, MonoBmp *bmp){
 /*
 //あとでなおす
 //モノクロビットマップを出力
-void write_bmp(MonoBmp *bmp,char *dst_path){
+void write_bmp(Bmp *bmp,char *dst_path){
   FILE *fp;
   int i,j,k;
   unsigned int fs;

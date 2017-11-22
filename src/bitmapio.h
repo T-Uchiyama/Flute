@@ -12,15 +12,13 @@ BMP_IO_ERROR_FAILD_TO_ALLOCATE_MEMORY
 
 
 
-typedef struct __MonoBmp__{//白黒ビットマップ
+typedef struct __Bmp__{//白黒ビットマップ
   int width;             /* x方向のピクセル数 */
   int height;             /* y方向のピクセル数 */
-  int init_width;
-  int init_height;
-  double angle;
-  unsigned char **map;  /*実際の配列    白=0,黒=1 */
-  /* ピクセルのデータは左から右，上から下へ走査した順で格納，左上が(0,0)*/
-}MonoBmp;
+  int bit_count; /* 1ピクセルビット数 */
+  unsigned char *map;  /* データ */
+} Bmp;
+
 
 typedef struct __BmpHeader__{
   unsigned char FileType[2];
@@ -51,15 +49,14 @@ typedef struct __ColorPalette__{
 }ColorPalette;
 
 //モノクロビットマップのファイルを開く
-BMP_IO_ERR_CODE load_mono_bmp_file(char* filename, MonoBmp *bmp);
+BMP_IO_ERR_CODE load_mono_bmp_file(char* filename, Bmp *bmp);
 
 
-void init_mono_bmp(MonoBmp *bmp);
-void delete_mono_bmp(MonoBmp *bmp);
-int alloc_bmp(int width,int height,MonoBmp *bmp);
-void write_bmp(MonoBmp *bmp,char *dst_path);
+void init_mono_bmp(Bmp *bmp);
+void delete_mono_bmp(Bmp *bmp);
+int alloc_bmp(int width,int height,Bmp *bmp);
+void write_bmp(Bmp *bmp,char *dst_path);
 unsigned char **mem_alloc_for_bmp(int width,int height);
-void free_for_bmp(unsigned char ** map);
 
 
 #endif
