@@ -32,8 +32,8 @@ $(function(){
     var y;
     var ost_x = ((cam_x % tile_w) + tile_w) % tile_w;
     var ost_y = ((cam_y % tile_h) + tile_h) % tile_h;
-    var t_ost_x;
-    var t_ost_y;
+    var t_ost_x = Math.floor(cam_x / tile_w);
+    var t_ost_y = Math.floor(cam_y / tile_h);
     
 
     
@@ -60,42 +60,61 @@ $(function(){
         }
         var tile_pos_x = (tile_w*x-ost_x);
         var tile_pos_y = (tile_h*y-ost_y);
+        var img_style = 'pointer-events: none;';
         if (tile_pos_x < 0){
           tile_pos_x = 0;
+          img_style += 'right:0;'
         }
         if (tile_pos_y < 0){
           tile_pos_y = 0;
+          img_style += 'bottom:0;'
         }
         htm += '<div style="width:' + w + 'px;height:' + h + 'px;position:absolute;left:'+ tile_pos_x +'px;top:'+ tile_pos_y +'px;overflow:hidden;">';
-        
-        htm += '<img id="tile_' + y + '_' + x + '" width="'+ tile_w + '"height="'+ tile_h +'" >\n';
+        if (img_style.length){
+          img_style = 'style="position:absolute;' + img_style +'"';
+        } 
+        var id = 'tile_' + (y + t_ost_y) + '_' + (x + t_ost_x);
+        var src = '';
+        if ($('#' + id).length && $('#' + id).attr('src') != undefined && $('#' + id).attr('src').length){
+          src = $('#' + id).attr('src');
+        }
+        if (src.length){
+          src = ' src="' + src + '"';
+        }
+        htm += '<img id="' + id + '" width="'+ tile_w + '"height="'+ tile_h +'"' + img_style + src +' >\n';
+      
         htm += '</div>';
         //console.log(x);
         //console.log(y);
       }
     }
     $('#draw_window').html(htm);
-    /*
+    
     for (y = 0 ; y < tile_y ; y++){
       for (x = 0 ; x < tile_x ; x++){
         var w = tile_w;
         var h = tile_h;
-        if (x * tile_w + w > w_width){
-          w = w_width - x * tile_w;
+        if (x * tile_w + w - ost_x > w_width){
+          w = w_width - x * tile_w + ost_x;
         }
-        if (y * tile_h + h > w_height){
-          h = w_height - y * tile_h;
+        if (y * tile_h + h - ost_y > w_height){
+          h = w_height - y * tile_h + ost_y;
         }
         if (w < 0 || h < 0){
           continue;
         }
-        var id = 'tile_' + y + '_' + x;
-        var url = '/read/test.bmp_y' + y + '_x' + x + '.png';
-        
+        if ((y + t_ost_y) < 0 || (x + t_ost_x) < 0){
+            continue;
+        }
+        var id = 'tile_' + (y + t_ost_y) + '_' + (x + t_ost_x);
+        var url = '/read/test.bmp_y' + (y + t_ost_y) + '_x' + (x + t_ost_x) + '.png';
+        if (($('#' + id).attr('src')) != undefined && ($('#' + id).attr('src')).length){
+          continue;
+        }
         load_img(url, id);
       }
     }
-    */
+    
   };
   $('#draw_window').mousedown(function (e){
     mx = e.pageX - this.offsetLeft;
