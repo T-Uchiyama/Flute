@@ -35,8 +35,6 @@ $(function(){
     var t_ost_x = Math.floor(cam_x / tile_w);
     var t_ost_y = Math.floor(cam_y / tile_h);
     
-
-    
     var htm = '';
     for (y = 0 ; y < tile_y ; y++){
       for (x = 0 ; x < tile_x ; x++){
