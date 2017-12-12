@@ -26,14 +26,15 @@ $(function(){
   }
   
   function draw() {
-    var tile_x = Math.floor((w_width + tile_w - 1) / tile_w) + 1;
-    var tile_y = Math.floor((w_height + tile_h - 1) / tile_h) + 1;
-    var x;
-    var y;
     var ost_x = ((cam_x % tile_w) + tile_w) % tile_w;
     var ost_y = ((cam_y % tile_h) + tile_h) % tile_h;
+    var tile_x = Math.floor(((w_width + ost_x) + tile_w - 1) / tile_w);
+    var tile_y = Math.floor(((w_height + ost_y) + tile_h - 1) / tile_h);
+    var x;
+    var y;
     var t_ost_x = Math.floor(cam_x / tile_w);
     var t_ost_y = Math.floor(cam_y / tile_h);
+    var pre_load_size = 2;
     
     var htm = '';
     for (y = 0 ; y < tile_y ; y++){
@@ -76,6 +77,10 @@ $(function(){
         if ($('#' + id).length && $('#' + id).attr('src') != undefined && $('#' + id).attr('src').length){
           src = $('#' + id).attr('src');
         }
+        var preload_id = 'preload_tile_' + (y + t_ost_y) + '_' + (x + t_ost_x);
+        if ($('#' + preload_id).length && $('#' + preload_id).attr('src') != undefined && $('#' + preload_id).attr('src').length){
+          src = $('#' + preload_id).attr('src');
+        }
         if (src.length){
           src = ' src="' + src + '"';
         }
@@ -104,6 +109,7 @@ $(function(){
         if ((y + t_ost_y) < 0 || (x + t_ost_x) < 0){
             continue;
         }
+        //console.log('y:'+ (y + t_ost_y) + ' x:' + (x + t_ost_x));
         var id = 'tile_' + (y + t_ost_y) + '_' + (x + t_ost_x);
         var url = '/read/test.bmp_y' + (y + t_ost_y) + '_x' + (x + t_ost_x) + '.png';
         if (($('#' + id).attr('src')) != undefined && ($('#' + id).attr('src')).length){
@@ -113,6 +119,143 @@ $(function(){
       }
     }
     
+    // preload 
+    htm = '';
+    for (y = 0 ; y < pre_load_size ; y++){
+      for (x = 0 ; x < tile_x ; x++){
+        var pre_y = t_ost_y -1 - y;
+        var pre_x = x + t_ost_x;
+        if (pre_x < 0 || pre_y < 0){
+           continue;
+        }
+        var id = 'preload_tile_' + pre_y + '_' + pre_x;
+        var src = '';
+        if ($('#' + id).length && $('#' + id).attr('src') != undefined && $('#' + id).attr('src').length){
+          src = $('#' + id).attr('src');
+        }
+        if (src.length){
+          src = ' src="' + src + '"';
+        }
+        htm += '<img id="' + id + '"' + src +' >\n';
+      }
+    }
+    for (y = 0 ; y < pre_load_size ; y++){
+      for (x = 0 ; x < tile_x ; x++){
+        var pre_y = tile_y + t_ost_y + y;
+        var pre_x = x + t_ost_x;
+        if (pre_x < 0 || pre_y < 0){
+           continue;
+        }
+        var id = 'preload_tile_' + pre_y + '_' + pre_x;
+        var src = '';
+        if ($('#' + id).length && $('#' + id).attr('src') != undefined && $('#' + id).attr('src').length){
+          src = $('#' + id).attr('src');
+        }
+        if (src.length){
+          src = ' src="' + src + '"';
+        }
+        htm += '<img id="' + id + '"' + src +' >\n';
+      }
+    } 
+    for (x = 0 ; x < pre_load_size ; x++){
+      for (y = - pre_load_size ; y < tile_y + pre_load_size ; y++){
+        var pre_y = y + t_ost_y;
+        var pre_x = t_ost_x -1 - x;
+        if (pre_x < 0 || pre_y < 0){
+           continue;
+        }
+        var id = 'preload_tile_' + pre_y + '_' + pre_x;
+        var src = '';
+        if ($('#' + id).length && $('#' + id).attr('src') != undefined && $('#' + id).attr('src').length){
+          src = $('#' + id).attr('src');
+        }
+        if (src.length){
+          src = ' src="' + src + '"';
+        }
+        htm += '<img id="' + id + '"' + src +' >\n';
+      }
+    }
+    for (x = 0 ; x < pre_load_size ; x++){
+      for (y = - pre_load_size ; y < tile_y + pre_load_size ; y++){
+        var pre_y = y + t_ost_y;
+        var pre_x = tile_x + t_ost_x + x;
+        if (pre_x < 0 || pre_y < 0){
+           continue;
+        }
+        var id = 'preload_tile_' + pre_y + '_' + pre_x;
+        var src = '';
+        if ($('#' + id).length && $('#' + id).attr('src') != undefined && $('#' + id).attr('src').length){
+          src = $('#' + id).attr('src');
+        }
+        if (src.length){
+          src = ' src="' + src + '"';
+        }
+        htm += '<img id="' + id + '"' + src +' >\n';
+      }
+    }
+    
+    $('#pre_load_area').html(htm);
+    
+    for (y = 0 ; y < pre_load_size ; y++){
+      for (x = 0 ; x < tile_x ; x++){
+        var pre_y = t_ost_y -1 - y;
+        var pre_x = x + t_ost_x;
+        if (pre_x < 0 || pre_y < 0){
+           continue;
+        }
+        var id = 'preload_tile_' + pre_y + '_' + pre_x;
+        var url = '/read/test.bmp_y' + pre_y + '_x' + pre_x + '.png';
+        if (($('#' + id).attr('src')) != undefined && ($('#' + id).attr('src')).length){
+          continue;
+        }
+        load_img(url, id);
+      }
+    }
+    for (y = 0 ; y < pre_load_size ; y++){
+      for (x = 0 ; x < tile_x ; x++){
+        var pre_y = tile_y + t_ost_y + y;
+        var pre_x = x + t_ost_x;
+        if (pre_x < 0 || pre_y < 0){
+           continue;
+        }
+        var id = 'preload_tile_' + pre_y + '_' + pre_x;
+        var url = '/read/test.bmp_y' + pre_y + '_x' + pre_x + '.png';
+        if (($('#' + id).attr('src')) != undefined && ($('#' + id).attr('src')).length){
+          continue;
+        }
+        load_img(url, id);
+      }
+    } 
+    for (x = 0 ; x < pre_load_size ; x++){
+      for (y = - pre_load_size ; y < tile_y + pre_load_size ; y++){
+        var pre_y = y + t_ost_y;
+        var pre_x = t_ost_x -1 - x;
+        if (pre_x < 0 || pre_y < 0){
+           continue;
+        }
+        var id = 'preload_tile_' + pre_y + '_' + pre_x;
+        var url = '/read/test.bmp_y' + pre_y + '_x' + pre_x + '.png';
+        if (($('#' + id).attr('src')) != undefined && ($('#' + id).attr('src')).length){
+          continue;
+        }
+        load_img(url, id);
+      }
+    }
+    for (x = 0 ; x < pre_load_size ; x++){
+      for (y = - pre_load_size ; y < tile_y + pre_load_size ; y++){
+        var pre_y = y + t_ost_y;
+        var pre_x = tile_x + t_ost_x + x;
+        if (pre_x < 0 || pre_y < 0){
+           continue;
+        }
+        var id = 'preload_tile_' + pre_y + '_' + pre_x;
+        var url = '/read/test.bmp_y' + pre_y + '_x' + pre_x + '.png';
+        if (($('#' + id).attr('src')) != undefined && ($('#' + id).attr('src')).length){
+          continue;
+        }
+        load_img(url, id);
+      }
+    }
   };
   $('#draw_window').mousedown(function (e){
     mx = e.pageX - this.offsetLeft;

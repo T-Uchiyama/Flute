@@ -41,6 +41,8 @@
         <div id="image-box" class=tile><img /></div>
       -->
       </div><!--/.content-area-->
+      <div id="pre_load_area" style="display:none;">
+      </div>
     </div>
   </div><!--/.main-content-->
     
