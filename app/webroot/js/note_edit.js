@@ -101,7 +101,7 @@ $(function(){
         var tile_pos_y = (-ost_y - tile_h);
         var img_style = 'pointer-events: none;';
         
-        htm += '<div style="width:' + tile_w + 'px;height:' + tile_h + 'px;position:absolute;left:'+ tile_pos_x +'px;top:'+ tile_pos_y +'px;overflow:hidden;">';
+        htm += '<div style="width:' + tile_w + 'px;height:' + tile_h + 'px;position:absolute;left:'+ tile_pos_x +'px;top:'+ tile_pos_y +'px;overflow:hidden;display:none;">';
         if (img_style.length){
           img_style = 'style="position:absolute;' + img_style +'"';
         } 
@@ -126,7 +126,7 @@ $(function(){
         var tile_pos_y = (-ost_y + tile_h * (rght_y - t_ost_y)); 
         var img_style = 'pointer-events: none;';
         
-        htm += '<div style="width:' + tile_w + 'px;height:' + tile_h + 'px;position:absolute;left:'+ tile_pos_x +'px;top:'+ tile_pos_y +'px;overflow:hidden;">';
+        htm += '<div style="width:' + tile_w + 'px;height:' + tile_h + 'px;position:absolute;left:'+ tile_pos_x +'px;top:'+ tile_pos_y +'px;overflow:hidden;display:none;">';
         if (img_style.length){
           img_style = 'style="position:absolute;' + img_style +'"';
         } 
@@ -151,7 +151,7 @@ $(function(){
         var tile_pos_y = (-tile_h * -(y - t_ost_y) - ost_y);
         var img_style = 'pointer-events: none;';
         
-        htm += '<div style="width:' + tile_w + 'px;height:' + tile_h + 'px;position:absolute;left:'+ tile_pos_x +'px;top:'+ tile_pos_y +'px;overflow:hidden;">';
+        htm += '<div style="width:' + tile_w + 'px;height:' + tile_h + 'px;position:absolute;left:'+ tile_pos_x +'px;top:'+ tile_pos_y +'px;overflow:hidden;display:none;">';
         if (img_style.length){
           img_style = 'style="position:absolute;' + img_style +'"';
         } 
@@ -176,7 +176,7 @@ $(function(){
         var tile_pos_y = (-tile_h * -(y - t_ost_y) - ost_y);
         var img_style = 'pointer-events: none;';
     
-        htm += '<div style="width:' + tile_w + 'px;height:' + tile_h + 'px;position:absolute;left:'+ tile_pos_x +'px;top:'+ tile_pos_y +'px;overflow:hidden;">';
+        htm += '<div style="width:' + tile_w + 'px;height:' + tile_h + 'px;position:absolute;left:'+ tile_pos_x +'px;top:'+ tile_pos_y +'px;overflow:hidden;display:none;">';
         if (img_style.length){
           img_style = 'style="position:absolute;' + img_style +'"';
         } 
