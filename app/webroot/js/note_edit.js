@@ -121,9 +121,9 @@ $(function(){
     
     // preload 
     htm = '';
-    for (y = 0 ; y < pre_load_size ; y++){
+    for (var cnt = 0; cnt < pre_load_size; cnt++){
       for (x = 0 ; x < tile_x ; x++){
-        var pre_y = t_ost_y -1 - y;
+        var pre_y = t_ost_y -1 - cnt;
         var pre_x = x + t_ost_x;
         if (pre_x < 0 || pre_y < 0){
            continue;
@@ -138,10 +138,9 @@ $(function(){
         }
         htm += '<img id="' + id + '"' + src +' >\n';
       }
-    }
-    for (y = 0 ; y < pre_load_size ; y++){
+      
       for (x = 0 ; x < tile_x ; x++){
-        var pre_y = tile_y + t_ost_y + y;
+        var pre_y = tile_y + t_ost_y + cnt;
         var pre_x = x + t_ost_x;
         if (pre_x < 0 || pre_y < 0){
            continue;
@@ -156,11 +155,10 @@ $(function(){
         }
         htm += '<img id="' + id + '"' + src +' >\n';
       }
-    } 
-    for (x = 0 ; x < pre_load_size ; x++){
+      
       for (y = - pre_load_size ; y < tile_y + pre_load_size ; y++){
         var pre_y = y + t_ost_y;
-        var pre_x = t_ost_x -1 - x;
+        var pre_x = t_ost_x -1 - cnt;
         if (pre_x < 0 || pre_y < 0){
            continue;
         }
@@ -174,11 +172,10 @@ $(function(){
         }
         htm += '<img id="' + id + '"' + src +' >\n';
       }
-    }
-    for (x = 0 ; x < pre_load_size ; x++){
+      
       for (y = - pre_load_size ; y < tile_y + pre_load_size ; y++){
         var pre_y = y + t_ost_y;
-        var pre_x = tile_x + t_ost_x + x;
+        var pre_x = tile_x + t_ost_x + cnt;
         if (pre_x < 0 || pre_y < 0){
            continue;
         }
@@ -196,9 +193,9 @@ $(function(){
     
     $('#pre_load_area').html(htm);
     
-    for (y = 0 ; y < pre_load_size ; y++){
+    for (cnt = 0 ; cnt < pre_load_size ; cnt++){
       for (x = 0 ; x < tile_x ; x++){
-        var pre_y = t_ost_y -1 - y;
+        var pre_y = t_ost_y -1 - cnt;
         var pre_x = x + t_ost_x;
         if (pre_x < 0 || pre_y < 0){
            continue;
@@ -210,10 +207,9 @@ $(function(){
         }
         load_img(url, id);
       }
-    }
-    for (y = 0 ; y < pre_load_size ; y++){
+      
       for (x = 0 ; x < tile_x ; x++){
-        var pre_y = tile_y + t_ost_y + y;
+        var pre_y = tile_y + t_ost_y + cnt;
         var pre_x = x + t_ost_x;
         if (pre_x < 0 || pre_y < 0){
            continue;
@@ -225,11 +221,10 @@ $(function(){
         }
         load_img(url, id);
       }
-    } 
-    for (x = 0 ; x < pre_load_size ; x++){
+    
       for (y = - pre_load_size ; y < tile_y + pre_load_size ; y++){
         var pre_y = y + t_ost_y;
-        var pre_x = t_ost_x -1 - x;
+        var pre_x = t_ost_x -1 - cnt;
         if (pre_x < 0 || pre_y < 0){
            continue;
         }
@@ -240,11 +235,10 @@ $(function(){
         }
         load_img(url, id);
       }
-    }
-    for (x = 0 ; x < pre_load_size ; x++){
+
       for (y = - pre_load_size ; y < tile_y + pre_load_size ; y++){
         var pre_y = y + t_ost_y;
-        var pre_x = tile_x + t_ost_x + x;
+        var pre_x = tile_x + t_ost_x + cnt;
         if (pre_x < 0 || pre_y < 0){
            continue;
         }
