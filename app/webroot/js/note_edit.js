@@ -35,13 +35,17 @@ $(function(){
     var t_ost_x = Math.floor(cam_x / tile_w);
     var t_ost_y = Math.floor(cam_y / tile_h);
     var pre_load_size = 2;
+    var generated_meta_info = [];
+    
+    var id_prefix = 'tile';
+    var preload_id_prefix = 'preload_tile';
+    var file_prefix = '/read/test.bmp';
     
     var htm = '';
     for (y = 0 ; y < tile_y ; y++){
       for (x = 0 ; x < tile_x ; x++){
         var w = tile_w;
         var h = tile_h;
-        
         if (x * tile_w - ost_x < 0){
           w = tile_w - ost_x;
         }
@@ -59,204 +63,93 @@ $(function(){
         }
         var tile_pos_x = (tile_w*x-ost_x);
         var tile_pos_y = (tile_h*y-ost_y);
-        var img_style = 'pointer-events: none;';
-        if (tile_pos_x < 0){
-          tile_pos_x = 0;
-          img_style += 'right:0;'
-        }
-        if (tile_pos_y < 0){
-          tile_pos_y = 0;
-          img_style += 'bottom:0;'
-        }
-        htm += '<div style="width:' + w + 'px;height:' + h + 'px;position:absolute;left:'+ tile_pos_x +'px;top:'+ tile_pos_y +'px;overflow:hidden;">';
-        if (img_style.length){
-          img_style = 'style="position:absolute;' + img_style +'"';
-        } 
-        var id = 'tile_' + (y + t_ost_y) + '_' + (x + t_ost_x);
-        var src = '';
-        if ($('#' + id).length && $('#' + id).attr('src') != undefined && $('#' + id).attr('src').length){
-          src = $('#' + id).attr('src');
-        }
-        var preload_id = 'preload_tile_' + (y + t_ost_y) + '_' + (x + t_ost_x);
-        if ($('#' + preload_id).length && $('#' + preload_id).attr('src') != undefined && $('#' + preload_id).attr('src').length){
-          src = $('#' + preload_id).attr('src');
-        }
-        if (src.length){
-          src = ' src="' + src + '"';
-        }
-        htm += '<img id="' + id + '" width="'+ tile_w + '"height="'+ tile_h +'"' + img_style + src +' >\n';
-      
-        htm += '</div>';
-        //console.log(x);
-        //console.log(y);
+        htm += gen_img_tag(id_prefix, (y + t_ost_y), (x + t_ost_x), preload_id_prefix, w, h, tile_pos_y, tile_pos_x);
+        generated_meta_info.push({prefix:id_prefix, y:(y + t_ost_y), x: (x + t_ost_x)});
       }
     }
     $('#draw_window').html(htm);
-    
-    for (y = 0 ; y < tile_y ; y++){
-      for (x = 0 ; x < tile_x ; x++){
-        var w = tile_w;
-        var h = tile_h;
-        if (x * tile_w + w - ost_x > w_width){
-          w = w_width - x * tile_w + ost_x;
-        }
-        if (y * tile_h + h - ost_y > w_height){
-          h = w_height - y * tile_h + ost_y;
-        }
-        if (w < 0 || h < 0){
-          continue;
-        }
-        if ((y + t_ost_y) < 0 || (x + t_ost_x) < 0){
-            continue;
-        }
-        //console.log('y:'+ (y + t_ost_y) + ' x:' + (x + t_ost_x));
-        var id = 'tile_' + (y + t_ost_y) + '_' + (x + t_ost_x);
-        var url = '/read/test.bmp_y' + (y + t_ost_y) + '_x' + (x + t_ost_x) + '.png';
-        if (($('#' + id).attr('src')) != undefined && ($('#' + id).attr('src')).length){
-          continue;
-        }
-        load_img(url, id);
-      }
-    }
-    
-    // preload 
+
     htm = '';
-    for (y = 0 ; y < pre_load_size ; y++){
+    for (p = 0 ; p < pre_load_size ; p++){
       for (x = 0 ; x < tile_x ; x++){
-        var pre_y = t_ost_y -1 - y;
+        var pre_y = t_ost_y -1 - p;
         var pre_x = x + t_ost_x;
-        if (pre_x < 0 || pre_y < 0){
-           continue;
-        }
-        var id = 'preload_tile_' + pre_y + '_' + pre_x;
-        var src = '';
-        if ($('#' + id).length && $('#' + id).attr('src') != undefined && $('#' + id).attr('src').length){
-          src = $('#' + id).attr('src');
-        }
-        if (src.length){
-          src = ' src="' + src + '"';
-        }
-        htm += '<img id="' + id + '"' + src +' >\n';
+        htm += gen_img_tag(preload_id_prefix, pre_y, pre_x);
+        generated_meta_info.push({prefix:preload_id_prefix, y:pre_y, x: pre_x});
+        pre_y = tile_y + t_ost_y + p;
+        pre_x = x + t_ost_x;
+        htm += gen_img_tag(preload_id_prefix, pre_y, pre_x);
+        generated_meta_info.push({prefix:preload_id_prefix, y:pre_y, x: pre_x});
       }
-    }
-    for (y = 0 ; y < pre_load_size ; y++){
-      for (x = 0 ; x < tile_x ; x++){
-        var pre_y = tile_y + t_ost_y + y;
-        var pre_x = x + t_ost_x;
-        if (pre_x < 0 || pre_y < 0){
-           continue;
-        }
-        var id = 'preload_tile_' + pre_y + '_' + pre_x;
-        var src = '';
-        if ($('#' + id).length && $('#' + id).attr('src') != undefined && $('#' + id).attr('src').length){
-          src = $('#' + id).attr('src');
-        }
-        if (src.length){
-          src = ' src="' + src + '"';
-        }
-        htm += '<img id="' + id + '"' + src +' >\n';
-      }
-    } 
-    for (x = 0 ; x < pre_load_size ; x++){
       for (y = - pre_load_size ; y < tile_y + pre_load_size ; y++){
         var pre_y = y + t_ost_y;
-        var pre_x = t_ost_x -1 - x;
-        if (pre_x < 0 || pre_y < 0){
-           continue;
-        }
-        var id = 'preload_tile_' + pre_y + '_' + pre_x;
-        var src = '';
-        if ($('#' + id).length && $('#' + id).attr('src') != undefined && $('#' + id).attr('src').length){
-          src = $('#' + id).attr('src');
-        }
-        if (src.length){
-          src = ' src="' + src + '"';
-        }
-        htm += '<img id="' + id + '"' + src +' >\n';
+        var pre_x = t_ost_x -1 - p;
+        htm += gen_img_tag(preload_id_prefix, pre_y, pre_x);
+        generated_meta_info.push({prefix:preload_id_prefix, y:pre_y, x: pre_x});
+        pre_y = y + t_ost_y;
+        pre_x = tile_x + t_ost_x + p;
+        htm += gen_img_tag(preload_id_prefix, pre_y, pre_x);
+        generated_meta_info.push({prefix:preload_id_prefix, y:pre_y, x: pre_x});
       }
     }
-    for (x = 0 ; x < pre_load_size ; x++){
-      for (y = - pre_load_size ; y < tile_y + pre_load_size ; y++){
-        var pre_y = y + t_ost_y;
-        var pre_x = tile_x + t_ost_x + x;
-        if (pre_x < 0 || pre_y < 0){
-           continue;
-        }
-        var id = 'preload_tile_' + pre_y + '_' + pre_x;
-        var src = '';
-        if ($('#' + id).length && $('#' + id).attr('src') != undefined && $('#' + id).attr('src').length){
-          src = $('#' + id).attr('src');
-        }
-        if (src.length){
-          src = ' src="' + src + '"';
-        }
-        htm += '<img id="' + id + '"' + src +' >\n';
-      }
-    }
-    
     $('#pre_load_area').html(htm);
     
-    for (y = 0 ; y < pre_load_size ; y++){
-      for (x = 0 ; x < tile_x ; x++){
-        var pre_y = t_ost_y -1 - y;
-        var pre_x = x + t_ost_x;
-        if (pre_x < 0 || pre_y < 0){
-           continue;
-        }
-        var id = 'preload_tile_' + pre_y + '_' + pre_x;
-        var url = '/read/test.bmp_y' + pre_y + '_x' + pre_x + '.png';
-        if (($('#' + id).attr('src')) != undefined && ($('#' + id).attr('src')).length){
-          continue;
-        }
-        load_img(url, id);
-      }
-    }
-    for (y = 0 ; y < pre_load_size ; y++){
-      for (x = 0 ; x < tile_x ; x++){
-        var pre_y = tile_y + t_ost_y + y;
-        var pre_x = x + t_ost_x;
-        if (pre_x < 0 || pre_y < 0){
-           continue;
-        }
-        var id = 'preload_tile_' + pre_y + '_' + pre_x;
-        var url = '/read/test.bmp_y' + pre_y + '_x' + pre_x + '.png';
-        if (($('#' + id).attr('src')) != undefined && ($('#' + id).attr('src')).length){
-          continue;
-        }
-        load_img(url, id);
-      }
-    } 
-    for (x = 0 ; x < pre_load_size ; x++){
-      for (y = - pre_load_size ; y < tile_y + pre_load_size ; y++){
-        var pre_y = y + t_ost_y;
-        var pre_x = t_ost_x -1 - x;
-        if (pre_x < 0 || pre_y < 0){
-           continue;
-        }
-        var id = 'preload_tile_' + pre_y + '_' + pre_x;
-        var url = '/read/test.bmp_y' + pre_y + '_x' + pre_x + '.png';
-        if (($('#' + id).attr('src')) != undefined && ($('#' + id).attr('src')).length){
-          continue;
-        }
-        load_img(url, id);
-      }
-    }
-    for (x = 0 ; x < pre_load_size ; x++){
-      for (y = - pre_load_size ; y < tile_y + pre_load_size ; y++){
-        var pre_y = y + t_ost_y;
-        var pre_x = tile_x + t_ost_x + x;
-        if (pre_x < 0 || pre_y < 0){
-           continue;
-        }
-        var id = 'preload_tile_' + pre_y + '_' + pre_x;
-        var url = '/read/test.bmp_y' + pre_y + '_x' + pre_x + '.png';
-        if (($('#' + id).attr('src')) != undefined && ($('#' + id).attr('src')).length){
-          continue;
-        }
-        load_img(url, id);
-      }
-    }
+    generated_meta_info.forEach(function (o){
+      combine_fpath_id(o.prefix, file_prefix, o.y , o.x);
+    });
   };
+  function gen_img_tag(id_prefix, tile_y, tile_x, preload_id_prefix = '', width = 0, height = 0, pos_y = 0, pos_x = 0){
+    if ((tile_x < 0 || tile_y < 0) && width == 0 && height == 0 ){
+       return '';
+    }
+    var htm = '';
+    var id = id_prefix + '_' + tile_y + '_' + tile_x;
+    var src = '';
+    if ($('#' + id).length && $('#' + id).attr('src') != undefined && $('#' + id).attr('src').length){
+      src = $('#' + id).attr('src');
+    }
+    if (width != 0 && height != 0){
+      var preload_id = preload_id_prefix + '_' + tile_y + '_' + tile_x;
+      var img_style = 'pointer-events: none;';
+      if (pos_x < 0){
+        pos_x = 0;
+        img_style += 'right:0;'
+      }
+      if (pos_y < 0){
+        pos_y = 0;
+        img_style += 'bottom:0;'
+      }
+      if (img_style.length){
+        img_style = 'style="position:absolute;' + img_style +'"';
+      } 
+      if (src.length == 0 && $('#' + preload_id).length && $('#' + preload_id).attr('src') != undefined && $('#' + preload_id).attr('src').length){
+        src = $('#' + preload_id).attr('src');
+      }
+      if (src.length){
+        src = ' src="' + src + '"';
+      }
+      htm += '<div style="width:' + width + 'px;height:' + height + 'px;position:absolute;left:'+ pos_x +'px;top:'+ pos_y +'px;overflow:hidden;">';
+      htm += '<img id="' + id + '" width="'+ tile_w + '"height="'+ tile_h +'"' + img_style + src +' >\n';
+      htm += '</div>';
+    } else {
+      if (src.length){
+        src = ' src="' + src + '"';
+      }
+      htm += '<img id="' + id + '"' + src +' >\n';
+    }
+    return htm;
+  }
+  function combine_fpath_id(id_prefix, fpath_prefix, tile_y, tile_x){
+    if (tile_x < 0 || tile_y < 0){
+       return;
+    }
+    var id = id_prefix + '_' + tile_y + '_' + tile_x;
+    var url = fpath_prefix + '_y' + tile_y + '_x' + tile_x + '.png';
+    if (($('#' + id).attr('src')) != undefined && ($('#' + id).attr('src')).length){
+      return;
+    }
+    load_img(url, id);
+  }
   $('#draw_window').mousedown(function (e){
     mx = e.pageX - this.offsetLeft;
     my = e.pageY - this.offsetTop;
@@ -298,11 +191,5 @@ $(function(){
           // 何らかの処理
       }, 200); // リサイズ中かどうか判定する時間、ms
   });
-  
-  
-  
-
-  
   draw();
-  
 });
