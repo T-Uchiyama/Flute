@@ -150,20 +150,22 @@ int tile(char *filename, Bmp *bmp){
     return 1;
 }
 
-int main(){
+int main(int argc, char *argv[]){ // 引数の記載は char* array[]で確定
   Bmp bmp;
   clock_t t1, t2;
   double time;
   init_mono_bmp(&bmp);
   t1 = clock();
-  load_mono_bmp_file("test.bmp", &bmp);
+  char *inputPath = argv[1];
+  char *outputPath = argv[2];
+  load_mono_bmp_file(inputPath, &bmp);
   t2 = clock();
   time = (double)(t2 - t1)/CLOCKS_PER_SEC;
   printf("load time = %f sec\n", time);
   
   //////////////////////////////////////
   t1 = clock();
-  tile("test.bmp", &bmp);
+  tile(outputPath, &bmp);
   t2 = clock();
   time = (double)(t2 - t1)/CLOCKS_PER_SEC;
   printf("tile write time = %f sec\n", time);
