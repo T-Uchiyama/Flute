@@ -43,6 +43,8 @@
       </div><!--/.content-area-->
       <div id="pre_load_area" style="display:none;">
       </div>
+      <div id="file_name_data" style="display:none;" value="<?php echo $imageData['Music']['image'] ?>">
+      </div>
     </div>
   </div><!--/.main-content-->
     

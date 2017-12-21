@@ -15,7 +15,8 @@ class MusicController extends AppController {
     }
     
     public function note_edit($id = 0){
-        
+        $imageData = $this->getImage($id);
+        $this->set(compact('imageData'));
         $this->layout = '';
     }
     
@@ -33,13 +34,22 @@ class MusicController extends AppController {
         }
     }
     
-    public function getImage()
+    public function getImage($id = 0)
     {
-        $imageList = $this->Music->find('list', array(
-            'fields' => array('id', 'image')
-            )
-        );
-        return $imageList;
+        if ($id != 0) {
+            $imageData = $this->Music->find('first',array(
+                'conditions' => array(
+                    'id' => $id,
+                ),
+            ));
+            return $imageData;
+        } else {
+            $imageList = $this->Music->find('list', array(
+                'fields' => array('id', 'image')
+                )
+            );
+            return $imageList;
+        }
     }
     
     public function imageConversion($id = 0, $fname = '')

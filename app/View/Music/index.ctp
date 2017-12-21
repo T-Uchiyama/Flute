@@ -61,6 +61,13 @@
                                             <th><?php echo $value ?></th>
                                             <th><?php echo (APP_DIR.'/tmp/origFiles/image/'.$key.DS.$value) ?></th>
                                             <th><?php echo (APP_DIR.'/tmp/files/image/'.$key) ?></th>
+                                            <th><?php 
+                                                    echo $this->Form->postLink(__('Edit'), 
+                                                        array('action' => 'note_edit', $key),
+                                                        array('class' => 'btn btn-primary')
+                                                    );
+                                                ?>
+                                            </th>
                                         </tr>
                                         <?php endforeach; ?>
                                     </tbody>

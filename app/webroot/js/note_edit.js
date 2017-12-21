@@ -10,6 +10,7 @@ $(function(){
   var mx = 0;
   var my = 0;
   var drag = false;
+  var fileNameData;
   //console.log('width:'+w_width);
   //console.log('height:'+w_height);
   
@@ -37,9 +38,17 @@ $(function(){
     var pre_load_size = 2;
     var generated_meta_info = [];
     
+    var url = location.href; 
+    var parameters = url.split('/');
+    var dir_id = parameters[parameters.length - 1];
+    var imgName = $('#file_name_data').attr('value');
     var id_prefix = 'tile';
     var preload_id_prefix = 'preload_tile';
-    var file_prefix = '/read/test.bmp';
+    if (dir_id.match(/^\d+$/)) {
+        var file_prefix = '/read/image/' + dir_id + '/' + imgName;
+    } else {
+        var file_prefix = '/read/test.bmp';
+    }
     
     var lft_x = t_ost_x - 1;
     var lft_y = t_ost_y - 1;
