@@ -62,12 +62,11 @@ class MusicController extends AppController {
         ); 
         $input_fpath_prefix = '../'.APP_DIR.'/tmp/origFiles/image/';
         $output_fpath_prefix = '../'.APP_DIR.'/tmp/files/image/';            
-        
-        $input_fpath = $input_fpath_prefix.$id.DS.$fname;
-        $output_fpath = $output_fpath_prefix.$id.DS.$fname;    
-        $exe = '../bin/test '. "$input_fpath" . ' ' . "$output_fpath";
-        
-        $process = proc_open($exe, $spec, $pipes, ROOT.DS.'src', null);
+        $rootName = explode('.', $fname);
+        $reFilename =  $rootName[0].'.bmp';
+        $exe = 'convert '. "$fname" . ' -type truecolor ' . "$reFilename";
+
+        $process = proc_open($exe, $spec, $pipes, ROOT.DS.APP_DIR.'/tmp/origFiles/image/'.$id, null);
         if (is_resource($process)) {
             fclose($pipes[0]);
             fclose($pipes[1]);;
@@ -75,11 +74,25 @@ class MusicController extends AppController {
         }
         
         if ($flg == 0) {
-            $this->Flash->success(__('The Image has been saved and combined'));
-            $this->redirect(array('action' => 'index'));
-        } else {
-            $this->Flash->error(__('Unable to combine the Image.'));
-            $this->redirect(array('action' => 'index'));
+            $flg = 1;
+            $input_fpath = $input_fpath_prefix.$id.DS.$reFilename;
+            $output_fpath = $output_fpath_prefix.$id.DS.$reFilename;    
+            $exe = '../bin/test '. "$input_fpath" . ' ' . "$output_fpath";
+            
+            $process = proc_open($exe, $spec, $pipes, ROOT.DS.'src', null);
+            if (is_resource($process)) {
+                fclose($pipes[0]);
+                fclose($pipes[1]);;
+                $flg = proc_close($process);
+            }
+            
+            if ($flg == 0) {
+                $this->Flash->success(__('The Image has been saved and combined'));
+                $this->redirect(array('action' => 'index'));
+            } else {
+                $this->Flash->error(__('Unable to combine the Image.'));
+                $this->redirect(array('action' => 'index'));
+            }
         }
     }
 }
