@@ -42,10 +42,11 @@ $(function(){
     var parameters = url.split('/');
     var dir_id = parameters[parameters.length - 1];
     var imgName = $('#file_name_data').attr('value');
+    if (imgName != null && imgName != undefined) var imgArray = imgName.split('.');
     var id_prefix = 'tile';
     var preload_id_prefix = 'preload_tile';
     if (dir_id.match(/^\d+$/)) {
-        var file_prefix = '/read/image/' + dir_id + '/' + imgName;
+        var file_prefix = '/read/image/' + dir_id + '/' + imgArray[0] + '.bmp';
     } else {
         var file_prefix = '/read/test.bmp';
     }
