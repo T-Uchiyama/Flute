@@ -328,43 +328,41 @@ BMP_IO_ERR_CODE load_24bit_bmp_file(char* filename, Bmp *bmp){
   nDepth = 24; //24bit BGR
   dwWidthBytes = WIDTHBYTES(bmp->width * nDepth);
   
-  //TODO:1.mask処理の追加 
-  //     2.画像によってはできないものがあるためその精査
-  //     3.一連の流れで描画できるかのテスト
-  //  
-  mask = ~1;
+  mask = ~-1;
   // mask = ~(unsigned int)((int)0-bk);
-  printf("mask: %d\n", mask);
   
   if(bmp->height > 0){//高さが正の値の時はデータ先頭が画像の底
     for(i=bmp->height;i--;){
       k=0;
-      for(j = 0;j<(int)((bmp->width& 0xFFFFFFE0));j++){
+      for(j = 0;j<(int)((bmp->width& 0xFFFFFFFC));j++){
         char array[3];
         if(fread(array,3,1,fp)!=1){
           goto READ_END;
         }
-        // printf("-----------------------\n");
         // temp = __builtin_bswap32(temp);
-        // temp ^= mask;
-        for(k = 0;k<3;k++){
+        // *array ^= mask;
+        for(k = 0;k<1;k++){
           //bmp->map[i][j+k]=(temp>>(31-k))&1;
-          //int tmp = (temp>>(2-k))&1;
+          // int tmp = ((int)*array>>(2+k))&1;
           bmp->map[dwWidthBytes * i + (j+k)*3 + 0] = array[0];
           bmp->map[dwWidthBytes * i + (j+k)*3 + 1] = array[1];
           bmp->map[dwWidthBytes * i + (j+k)*3 + 2] = array[2];
         }
       }
       if(j<bmp->width){
-          char array[3];
-        fread(array,3,1,fp);
         // array = __builtin_bswap32(array);
-        // array ^= mask;
         for(k = 0;j + k< bmp->width;k++){
+          char array[3];
+          fread(array,3,1,fp);
+          *array ^= mask;
           //bmp->map[i][j+k]=(temp>>(31-k))&1;
+          // int tmp = ((int)*array>>(2+k))&1;
           bmp->map[dwWidthBytes * i + (j+k)*3 + 0] = array[0];
           bmp->map[dwWidthBytes * i + (j+k)*3 + 1] = array[1];
           bmp->map[dwWidthBytes * i + (j+k)*3 + 2] = array[2];
+        }
+        if (k == 1 || k == 2 || k == 3) {
+            fseek(fp, k, SEEK_CUR); 
         }
       }
     }
@@ -373,29 +371,34 @@ BMP_IO_ERR_CODE load_24bit_bmp_file(char* filename, Bmp *bmp){
     for(i = 0; i < bmp->height ; i++){
       k=0;
       char array[3];
-      for(j = 0;j<(int)((bmp->width& 0xFFFFFFE0));j++){
+      for(j = 0;j<(int)((bmp->width& 0xFFFFFFFC));j++){
         if(fread(array,3,1,fp)!=1){
           goto READ_END;
         }
         // array = __builtin_bswap32(array);
-        // array ^= mask;
-        for(k = 0;k<3;k++){
+        *array ^= mask;
+        for(k = 0;k<1;k++){
           //bmp->map[i][j+k]=(temp>>(31-k))&1;
+          // int tmp = ((int)*array>>(31-k))&1;
           bmp->map[dwWidthBytes * i + (j+k)*3 + 0] = array[0];
           bmp->map[dwWidthBytes * i + (j+k)*3 + 1] = array[1];
           bmp->map[dwWidthBytes * i + (j+k)*3 + 2] = array[2];
         }
       }
       if(j<bmp->width){
-           char array[3];
-        fread(array,3,1,fp);
         // array = __builtin_bswap32(array);
-        // array ^= mask;
         for(k = 0;j + k< bmp->width;k++){
+            char array[3];
+            fread(array,3,1,fp);
+            *array ^= mask;
           //bmp->map[i][j+k]=(temp>>(31-k))&1;
+          // int tmp = ((int)*array>>(2+k))&1;
           bmp->map[dwWidthBytes * i + (j+k)*3 + 0] = array[0];
           bmp->map[dwWidthBytes * i + (j+k)*3 + 1] = array[1];
           bmp->map[dwWidthBytes * i + (j+k)*3 + 2] = array[2];
+        }
+        if (k == 1 || k == 2 || k == 3) {
+            fseek(fp, k, SEEK_CUR); 
         }
       }
     }

@@ -150,16 +150,14 @@ int tile(char *filename, Bmp *bmp){
     return 1;
 }
 
-int main(int argc, char *argv[]){ // 引数の記載は char* array[]で確定
+int main(int argc, char *argv[]){ 
   Bmp bmp;
   clock_t t1, t2;
   double time;
   init_mono_bmp(&bmp);
   t1 = clock();
   char *inputPath = argv[1];
-  printf("%s\n", inputPath);
   char *outputPath = argv[2];
-  printf("%s\n", outputPath);
   // load_mono_bmp_file(inputPath, &bmp);
   load_24bit_bmp_file(inputPath, &bmp);
   t2 = clock();
